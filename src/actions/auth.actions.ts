@@ -1,6 +1,7 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 
 import { connectToDatabase } from "@shared/db/connection";
 import {
@@ -37,14 +38,19 @@ export async function loginAction(
   const callbackUrl = (formData.get("callbackUrl") as string) || "/";
 
   try {
-    await signIn("credentials", { ...parsed.data, redirectTo: callbackUrl });
-    return { success: true };
+    await signIn("credentials", { ...parsed.data, redirect: false });
   } catch (error) {
     if (error instanceof AuthError) {
       return { success: false, formError: "Invalid email or password" };
     }
     throw error;
   }
+
+  // Re-fetch the freshly-established session (its cookie was already set by
+  // signIn above) so a seller who must change their password is sent there
+  // directly, instead of to callbackUrl, no matter which page they signed in from.
+  const session = await auth();
+  redirect(session?.user.mustChangePassword ? "/force-password-change" : callbackUrl);
 }
 
 export async function registerAction(

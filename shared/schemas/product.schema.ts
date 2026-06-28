@@ -13,7 +13,10 @@ export const createProductSchema = z.object({
   name: z.string().min(2, "Name is required"),
   description: z.string().min(10, "Description should be at least 10 characters"),
   price: z.coerce.number().positive("Price must be greater than 0"),
-  discountPrice: z.coerce.number().positive().optional().nullable(),
+  discountPrice: z.preprocess(
+    (val) => (val === "" ? undefined : val),
+    z.coerce.number().positive().optional().nullable()
+  ),
   stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
   sku: z.string().min(1, "SKU is required"),
   category: objectIdSchema,

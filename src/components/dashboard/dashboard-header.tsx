@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -48,7 +49,9 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick: () => void }) {
             }
           />
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{session?.user.name}</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>{session?.user.name}</DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
               Sign out

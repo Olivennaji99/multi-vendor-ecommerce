@@ -41,14 +41,9 @@ export default auth((request) => {
 });
 
 export const config = {
-  matcher: [
-    "/admin/:path*",
-    "/seller/:path*",
-    "/cart/:path*",
-    "/checkout/:path*",
-    "/wishlist/:path*",
-    "/account/:path*",
-    "/orders/:path*",
-    "/force-password-change",
-  ],
+  // Broad matcher (rather than just the protected prefixes referenced above) so the
+  // mustChangePassword redirect below still fires no matter which page a seller lands
+  // on after login (e.g. "/" is the default post-login redirect and isn't one of the
+  // explicitly protected prefixes).
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api|uploads).*)"],
 };

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -111,7 +112,9 @@ export function Header() {
               }
             />
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+              </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem render={<Link href="/orders">My Orders</Link>} />
               <DropdownMenuItem render={<Link href="/account">Account Settings</Link>} />
