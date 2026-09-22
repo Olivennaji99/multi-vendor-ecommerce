@@ -1,7 +1,6 @@
 import "dotenv/config";
 
 import { connectToDatabase } from "@shared/db/connection";
-import { Category } from "@shared/models/Category.model";
 import { Order } from "@shared/models/Order.model";
 import { OrderItem } from "@shared/models/OrderItem.model";
 import { Product } from "@shared/models/Product.model";
@@ -10,38 +9,21 @@ import { User } from "@shared/models/User.model";
 async function main() {
   await connectToDatabase();
 
-  const products = await Product.find({}).select("name slug seller category");
-  console.log(`Total products: ${products.length}`);
-  for (const product of products) {
-    const seller = await User.findById(product.seller);
-    const category = await Category.findById(product.category);
-    if (!seller || !category) {
-      console.log(
-        `ORPHANED product "${product.name}" (${product._id}) - seller missing: ${!seller}, category missing: ${!category}`
-      );
-    }
-  }
-
-  const orders = await Order.find({}).select("orderNumber customer items");
-  console.log(`\nTotal orders: ${orders.length}`);
+  const orders = await Order.find({}).select("orderNumber customer items status");
+  console.log(`Total orders: ${orders.length}`);
   for (const order of orders) {
     const customer = await User.findById(order.customer);
-    if (!customer) {
-      console.log(`ORPHANED order "${order.orderNumber}" (${order._id}) - customer missing`);
-    }
+    console.log(
+      `${order.orderNumber} (${order._id}) status=${order.status} customer=${customer ? customer.email : "MISSING"}`
+    );
     for (const itemId of order.items) {
       const item = await OrderItem.findById(itemId);
       if (!item) {
-        console.log(`  Order ${order.orderNumber} references missing OrderItem ${itemId}`);
+        console.log(`  -> missing OrderItem ${itemId}`);
         continue;
       }
       const product = await Product.findById(item.product);
-      const seller = await User.findById(item.seller);
-      if (!product || !seller) {
-        console.log(
-          `  Order ${order.orderNumber} item "${item.nameSnapshot}" - product missing: ${!product}, seller missing: ${!seller}`
-        );
-      }
+      console.log(`  -> item "${item.nameSnapshot}" product exists: ${Boolean(product)}`);
     }
   }
 
